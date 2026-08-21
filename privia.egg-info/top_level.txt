@@ -1,0 +1,12 @@
+privia_agent
+privia_api
+privia_embeddings
+privia_integrations
+privia_llm
+privia_memory
+privia_observability
+privia_security
+privia_shared
+privia_speech
+privia_storage
+privia_tools

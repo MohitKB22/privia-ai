@@ -1,0 +1,61 @@
+# PRIVIA in Docker.
+#
+# The container is a convenience for running the backend on a machine where you
+# do not want to install Python. It changes nothing about the security model:
+# the API still binds to loopback inside the container, permissions still apply,
+# and no data leaves the host.
+#
+# Your data lives in the named volume `privia-data`. Folders you want PRIVIA to
+# read must be mounted explicitly and added to ALLOWED_DIRECTORIES - a container
+# cannot see your filesystem unless you show it.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+      target: runtime
+    image: privia/api:1.0.0
+    container_name: privia-api
+    restart: unless-stopped
+    # Published on loopback only. Change this and you are exposing tool
+    # execution to your network; set PRIVIA_API_TOKEN if you ever do.
+    ports:
+      - "127.0.0.1:8756:8756"
+    environment:
+      APP_ENV: production
+      LOG_LEVEL: INFO
+      PRIVIA_HOST: 0.0.0.0          # inside the container only
+      PRIVIA_PORT: "8756"
+      PRIVIA_DATA_DIR: /data
+      DATABASE_URL: sqlite:////data/privia.db
+      # Reach a model running on the host rather than in this container.
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      LOCAL_LLM_MODEL: ${LOCAL_LLM_MODEL:-llama3.1:8b}
+      # Mount folders below, then list them here.
+      ALLOWED_DIRECTORIES: ${ALLOWED_DIRECTORIES:-/workspace}
+      TERMINAL_WORKSPACE_ROOTS: ${TERMINAL_WORKSPACE_ROOTS:-/workspace}
+      PRIVIA_API_TOKEN: ${PRIVIA_API_TOKEN:?set PRIVIA_API_TOKEN - the container does not bind to loopback internally}
+    volumes:
+      - privia-data:/data
+      # Mount the folders PRIVIA may read. Read-only unless you need writes.
+      - ${PRIVIA_WORKSPACE:-./workspace}:/workspace:rw
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8756/health', timeout=3).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: false
+    tmpfs:
+      - /tmp:size=64m
+
+volumes:
+  privia-data:
+    driver: local

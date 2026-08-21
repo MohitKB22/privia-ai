@@ -1,3 +1,51 @@
+Metadata-Version: 2.4
+Name: privia
+Version: 1.0.0
+Summary: PRIVIA - Private Personal AI. A local-first, permission-aware desktop assistant.
+Author: PRIVIA Contributors
+License: Apache-2.0
+Project-URL: Homepage, https://github.com/privia-app/privia
+Project-URL: Documentation, https://github.com/privia-app/privia/tree/main/docs
+Project-URL: Issues, https://github.com/privia-app/privia/issues
+Keywords: local-first,privacy,assistant,agent,llm
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Utilities
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi<1.0,>=0.115
+Requires-Dist: uvicorn[standard]<1.0,>=0.30
+Requires-Dist: pydantic<3.0,>=2.7
+Requires-Dist: pydantic-settings<3.0,>=2.3
+Requires-Dist: sqlalchemy<3.0,>=2.0
+Requires-Dist: httpx<1.0,>=0.27
+Requires-Dist: python-multipart<1.0,>=0.0.9
+Requires-Dist: typing-extensions>=4.10
+Requires-Dist: cryptography>=42.0
+Provides-Extra: speech
+Requires-Dist: faster-whisper<2.0,>=1.0; extra == "speech"
+Requires-Dist: pyttsx3<3.0,>=2.90; extra == "speech"
+Provides-Extra: vector
+Requires-Dist: chromadb<2.0,>=0.5; extra == "vector"
+Provides-Extra: keychain
+Requires-Dist: keyring<26.0,>=25.0; extra == "keychain"
+Provides-Extra: dev
+Requires-Dist: pytest<9.0,>=8.0; extra == "dev"
+Requires-Dist: pytest-asyncio<1.0,>=0.23; extra == "dev"
+Requires-Dist: pytest-cov<7.0,>=5.0; extra == "dev"
+Requires-Dist: ruff<1.0,>=0.5; extra == "dev"
+Requires-Dist: black<26.0,>=24.0; extra == "dev"
+Requires-Dist: mypy<2.0,>=1.10; extra == "dev"
+Requires-Dist: bandit<2.0,>=1.7; extra == "dev"
+Requires-Dist: pip-audit<3.0,>=2.7; extra == "dev"
+Requires-Dist: anyio>=4.3; extra == "dev"
+Dynamic: license-file
+
 # PRIVIA
 
 **Private Personal AI.** A desktop assistant that runs on your machine, reads

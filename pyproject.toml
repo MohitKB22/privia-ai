@@ -1,0 +1,210 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "privia"
+version = "1.0.0"
+description = "PRIVIA - Private Personal AI. A local-first, permission-aware desktop assistant."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "PRIVIA Contributors" }]
+keywords = ["local-first", "privacy", "assistant", "agent", "llm"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Utilities",
+]
+
+dependencies = [
+  "fastapi>=0.115,<1.0",
+  "uvicorn[standard]>=0.30,<1.0",
+  "pydantic>=2.7,<3.0",
+  "pydantic-settings>=2.3,<3.0",
+  "sqlalchemy>=2.0,<3.0",
+  "httpx>=0.27,<1.0",
+  "python-multipart>=0.0.9,<1.0",
+  "typing-extensions>=4.10",
+  "cryptography>=42.0",
+]
+
+[project.optional-dependencies]
+speech = ["faster-whisper>=1.0,<2.0", "pyttsx3>=2.90,<3.0"]
+vector = ["chromadb>=0.5,<2.0"]
+keychain = ["keyring>=25.0,<26.0"]
+dev = [
+  "pytest>=8.0,<9.0",
+  "pytest-asyncio>=0.23,<1.0",
+  "pytest-cov>=5.0,<7.0",
+  "ruff>=0.5,<1.0",
+  "black>=24.0,<26.0",
+  "mypy>=1.10,<2.0",
+  "bandit>=1.7,<2.0",
+  "pip-audit>=2.7,<3.0",
+  "anyio>=4.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/privia-app/privia"
+Documentation = "https://github.com/privia-app/privia/tree/main/docs"
+Issues = "https://github.com/privia-app/privia/issues"
+
+[project.scripts]
+privia-api = "privia_api.__main__:main"
+privia-migrate = "privia_storage.cli:main"
+privia-doctor = "privia_api.doctor:main"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.package-dir]
+privia_shared = "packages/shared-types/privia_shared"
+privia_security = "packages/security/privia_security"
+privia_storage = "packages/storage/privia_storage"
+privia_observability = "packages/observability/privia_observability"
+privia_memory = "packages/memory/privia_memory"
+privia_tools = "packages/tool-runtime/privia_tools"
+privia_agent = "packages/agent-core/privia_agent"
+privia_llm = "services/llm/privia_llm"
+privia_embeddings = "services/embeddings/privia_embeddings"
+privia_speech = "services/speech/privia_speech"
+privia_integrations = "services/integrations/privia_integrations"
+privia_api = "apps/api/privia_api"
+
+[tool.setuptools.packages.find]
+where = [
+  "packages/shared-types",
+  "packages/security",
+  "packages/storage",
+  "packages/observability",
+  "packages/memory",
+  "packages/tool-runtime",
+  "packages/agent-core",
+  "services/llm",
+  "services/embeddings",
+  "services/speech",
+  "services/integrations",
+  "apps/api",
+]
+include = ["privia_*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+privia_storage = ["migrations/*.sql"]
+
+# ----------------------------------------------------------------------------
+# Tooling
+# ----------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-q --strict-markers --strict-config"
+pythonpath = [
+  "packages/shared-types",
+  "packages/security",
+  "packages/storage",
+  "packages/observability",
+  "packages/memory",
+  "packages/tool-runtime",
+  "packages/agent-core",
+  "services/llm",
+  "services/embeddings",
+  "services/speech",
+  "services/integrations",
+  "apps/api",
+]
+markers = [
+  "slow: long running tests",
+  "network: requires outbound network access",
+  "e2e: end-to-end flows through the API",
+  "security: adversarial / abuse-case tests",
+]
+filterwarnings = ["error::DeprecationWarning:privia_.*"]
+
+[tool.coverage.run]
+branch = true
+source = ["privia_shared", "privia_security", "privia_storage", "privia_observability",
+          "privia_memory", "privia_tools", "privia_agent", "privia_llm",
+          "privia_embeddings", "privia_speech", "privia_integrations", "privia_api"]
+omit = ["*/__main__.py"]
+
+[tool.coverage.report]
+skip_empty = true
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "@overload",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["apps/desktop", ".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "S", "RUF", "ASYNC"]
+ignore = [
+  "E501",    # line length is handled by black
+  "S101",    # asserts are fine in tests
+  "B008",    # FastAPI Depends() in defaults
+  "N818",    # exception naming convention
+  "SIM108",  # ternary readability is subjective
+  "RUF012",  # mutable class attrs without ClassVar
+  # __all__ in the package __init__ files is grouped by concern (enums, errors,
+  # tools, domain ...) and commented. Alphabetical order would be machine-tidy
+  # and human-useless, so the grouping wins.
+  "RUF022",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "N806", "B011"]
+"scripts/**" = ["S"]
+"packages/security/**" = ["S104"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["privia_shared", "privia_security", "privia_storage",
+                     "privia_observability", "privia_memory", "privia_tools",
+                     "privia_agent", "privia_llm", "privia_embeddings",
+                     "privia_speech", "privia_integrations", "privia_api"]
+
+[tool.mypy]
+python_version = "3.10"
+plugins = ["pydantic.mypy"]
+mypy_path = "packages/shared-types:packages/security:packages/storage:packages/observability:packages/memory:packages/tool-runtime:packages/agent-core:services/llm:services/embeddings:services/speech:services/integrations:apps/api"
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+no_implicit_optional = true
+strict_equality = true
+check_untyped_defs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = "(apps/desktop|build|dist|\\.venv)"
+
+[[tool.mypy.overrides]]
+module = ["faster_whisper.*", "pyttsx3.*", "chromadb.*", "keyring.*"]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "apps/desktop", ".venv", "build", "dist"]
+# B101  assert_used: asserts are used for invariants, not for validation.
+# B110  try_except_pass and B112 try_except_continue: PRIVIA deliberately
+#       swallows exceptions in exactly three places - the logger, the audit
+#       sink loop, and the secret-backend loop. In all three, failing the
+#       user's request because observability or one of several backends broke
+#       would be worse than continuing. Ruff still enforces S110/S112, so each
+#       site needs an explicit `# noqa` with a written justification; this skip
+#       only avoids duplicating that review in a second tool.
+skips = ["B101", "B110", "B112"]

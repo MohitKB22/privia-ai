@@ -1,0 +1,4 @@
+[console_scripts]
+privia-api = privia_api.__main__:main
+privia-doctor = privia_api.doctor:main
+privia-migrate = privia_storage.cli:main
