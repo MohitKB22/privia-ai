@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: theme('colors.graphite.950');
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible focus for keyboard users, invisible for pointer users. */
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: theme('colors.accent.line');
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.graphite.700');
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.graphite.600');
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-graphite-800 bg-graphite-900/70 shadow-panel backdrop-blur-sm;
+  }
+
+  .panel-flat {
+    @apply rounded-xl border border-graphite-800 bg-graphite-900;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium
+           transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply btn bg-accent/90 text-graphite-950 hover:bg-accent;
+  }
+  .btn-ghost {
+    @apply btn border border-graphite-700 text-graphite-200 hover:border-graphite-600 hover:bg-graphite-800;
+  }
+  .btn-danger {
+    @apply btn border border-danger/40 bg-danger/10 text-danger hover:bg-danger/20;
+  }
+  .btn-quiet {
+    @apply btn text-graphite-400 hover:bg-graphite-800 hover:text-graphite-100;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-graphite-700 bg-graphite-850 px-3 py-2 text-sm
+           text-graphite-100 placeholder:text-graphite-500 focus:border-accent/50 focus:outline-none;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-2xs font-medium;
+  }
+
+  .label {
+    @apply text-2xs font-semibold uppercase tracking-wider text-graphite-500;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded bg-graphite-800;
+  }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-shimmer
+           bg-gradient-to-r from-transparent via-graphite-700/40 to-transparent;
+  }
+
+  .prose-privia {
+    @apply text-[0.9375rem] leading-relaxed text-graphite-200;
+  }
+  .prose-privia pre {
+    @apply my-2 overflow-x-auto rounded-lg border border-graphite-800 bg-graphite-950 p-3
+           font-mono text-xs text-graphite-300;
+  }
+  .prose-privia code {
+    @apply rounded bg-graphite-800 px-1 py-0.5 font-mono text-[0.85em] text-accent;
+  }
+}
